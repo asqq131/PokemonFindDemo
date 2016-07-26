@@ -36,6 +36,7 @@
 		944DBF141D479EF400325443 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 944DBF111D479EF400325443 /* MBProgressHUD.m */; };
 		944DBF151D479EF400325443 /* README.mdown in Sources */ = {isa = PBXBuildFile; fileRef = 944DBF121D479EF400325443 /* README.mdown */; };
 		944DBF191D479EFF00325443 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 944DBF181D479EFF00325443 /* UIViewController+HUD.m */; };
+		944DBF1C1D47A72500325443 /* Pokemon.m in Sources */ = {isa = PBXBuildFile; fileRef = 944DBF1B1D47A72500325443 /* Pokemon.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,6 +95,8 @@
 		944DBF121D479EF400325443 /* README.mdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.mdown; sourceTree = "<group>"; };
 		944DBF171D479EFF00325443 /* UIViewController+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+HUD.h"; sourceTree = "<group>"; };
 		944DBF181D479EFF00325443 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
+		944DBF1A1D47A72500325443 /* Pokemon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pokemon.h; sourceTree = "<group>"; };
+		944DBF1B1D47A72500325443 /* Pokemon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Pokemon.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +139,8 @@
 				944DBF071D479EA600325443 /* AddLocationViewController.h */,
 				944DBF081D479EA600325443 /* AddLocationViewController.m */,
 				944DBF061D479E9800325443 /* WConstants.h */,
+				944DBF1A1D47A72500325443 /* Pokemon.h */,
+				944DBF1B1D47A72500325443 /* Pokemon.m */,
 				045685D31D420E8000106609 /* Main.storyboard */,
 				045685D61D420E8000106609 /* Assets.xcassets */,
 				045685D81D420E8000106609 /* LaunchScreen.storyboard */,
@@ -326,6 +331,7 @@
 				045686921D42102F00106609 /* UIRefreshControl+AFNetworking.m in Sources */,
 				045686871D42102F00106609 /* AFURLResponseSerialization.m in Sources */,
 				944DBF091D479EA600325443 /* AddLocationViewController.m in Sources */,
+				944DBF1C1D47A72500325443 /* Pokemon.m in Sources */,
 				045686831D42102F00106609 /* AFHTTPSessionManager.m in Sources */,
 				0456868B1D42102F00106609 /* AFAutoPurgingImageCache.m in Sources */,
 			);

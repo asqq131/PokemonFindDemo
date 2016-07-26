@@ -7,7 +7,7 @@
 //
 
 #import "AddLocationViewController.h"
-#import <CoreLocation/CoreLocation.h>
+#import "Pokemon.h"
 
 @interface AddLocationViewController ()
 
@@ -25,6 +25,7 @@
 }
 
 - (void)comfingAction:(UIBarButtonItem *)sender {
+    NSInteger pokemonId = [[_pokemoIdTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] integerValue]; // 精灵ID
     NSString *longitude = [_longitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 经度
     NSString *latitude = [_latitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 纬度
     
@@ -35,8 +36,8 @@
         return;
     }
     
-    CLLocation *location = [[CLLocation alloc] initWithLatitude:[latitude floatValue] longitude:[longitude floatValue]];
-    _selectLocationBlock(location);
+    Pokemon *pokemon = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:[latitude floatValue] andLongitude:[longitude floatValue]];
+    _selectLocationBlock(pokemon);
     [self.navigationController popViewControllerAnimated:YES];
 }
 

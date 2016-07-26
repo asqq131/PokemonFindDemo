@@ -14,6 +14,7 @@
 #import "AddLocationViewController.h"
 #import "UIViewController+HUD.h"
 #import "WConstants.h"
+#import "Pokemon.h"
 
 #define timeInterval 30
 
@@ -89,33 +90,6 @@
         pokemonId = defaultPokemonFindId;
     }
     
-    _isSearchLapras = YES;
-    if (_isSearchLapras) {
-        CLLocation *location1 = [[CLLocation alloc] initWithLatitude:37.77075800 longitude:-122.48725300];
-        CLLocation *location2 = [[CLLocation alloc] initWithLatitude:37.77492950 longitude:-122.4194155];
-        CLLocation *location3 = [[CLLocation alloc] initWithLatitude:37.77484901 longitude:-122.51171529];
-        CLLocation *location4 = [[CLLocation alloc] initWithLatitude:37.810062 longitude:-122.421890];
-        _moreLocationArray = [NSMutableArray arrayWithArray:@[location1, location2, location3, location4]];
-        pokemonId = 131;
-        
-    } else if (_isSearchSnorlax) {
-        CLLocation *location1 = [[CLLocation alloc] initWithLatitude:37.76667776582661 longitude:-122.49135732650757];
-        CLLocation *location2 = [[CLLocation alloc] initWithLatitude:37.80602037076846 longitude:-122.46837615966797];
-        CLLocation *location3 = [[CLLocation alloc] initWithLatitude:37.74259553070687 longitude:-122.41493582725523];
-        CLLocation *location4 = [[CLLocation alloc] initWithLatitude:37.79875119770314 longitude:-122.47482419013977];
-        CLLocation *location5 = [[CLLocation alloc] initWithLatitude:37.77168154377704 longitude:-122.47600436210632];
-        CLLocation *location6 = [[CLLocation alloc] initWithLatitude:37.824022798368375 longitude:-122.36984252929688];
-        CLLocation *location7 = [[CLLocation alloc] initWithLatitude:37.76297984117803 longitude:-122.47702360153197];
-        CLLocation *location8 = [[CLLocation alloc] initWithLatitude:37.788335748021495 longitude:-122.43685483932494];
-        CLLocation *location9 = [[CLLocation alloc] initWithLatitude:37.804024068552096 longitude:-122.42804646492004];
-        CLLocation *location10 = [[CLLocation alloc] initWithLatitude:37.80851673221186 longitude:-122.41245210170747];
-        CLLocation *location11 = [[CLLocation alloc] initWithLatitude:37.80226507389669 longitude:-122.4129295349121];
-        CLLocation *location12 = [[CLLocation alloc] initWithLatitude:37.77311476694162 longitude:-122.44287371635437];
-        _moreLocationArray = [NSMutableArray arrayWithArray:@[location1, location2, location3, location4, location5, location6, location7, location8, location9, location10, location11, location12]];
-        pokemonId = 143;
-    }
-    _emptyLocationTipLabel.hidden = !(_moreLocationArray.count == 0);
-    
     _longitudeTextField.text = longitude;
     _latitudeTextField.text = latitude;
     _pokemoIdTextField.text = [NSString stringWithFormat:@"%ld", (long)pokemonId];
@@ -125,6 +99,45 @@
     _moreLocationTableView.tableFooterView = [[UIView alloc] init];
     
     _rangeSwitch.enabled = NO;
+    
+    // 自定义添加搜索精灵坐标
+    _isSearchLapras = YES;
+    _isSearchSnorlax = YES;
+    [self customAddLocation];
+    _emptyLocationTipLabel.hidden = !(_moreLocationArray.count == 0);
+}
+
+- (void)customAddLocation {
+    NSInteger pokemonId = defaultPokemonFindId;
+    
+    if (_isSearchLapras) {
+        pokemonId = 131;
+        
+        Pokemon *pokemon1 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77075800 andLongitude:-122.48725300];
+        Pokemon *pokemon2 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77492950 andLongitude:-122.4194155];
+        Pokemon *pokemon3 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77484901 andLongitude:-122.51171529];
+        Pokemon *pokemon4 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.810062 andLongitude:-122.421890];
+        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4]];
+        
+    }
+    
+    if (_isSearchSnorlax) {
+        pokemonId = 143;
+        
+        Pokemon *pokemon1 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.76667776582661 andLongitude:-122.49135732650757];
+        Pokemon *pokemon2 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.80602037076846 andLongitude:-122.46837615966797];
+        Pokemon *pokemon3 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.74259553070687 andLongitude:-122.41493582725523];
+        Pokemon *pokemon4 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.79875119770314 andLongitude:-122.47482419013977];
+        Pokemon *pokemon5 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77168154377704 andLongitude:-122.47600436210632];
+        Pokemon *pokemon6 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.824022798368375 andLongitude:-122.36984252929688];
+        Pokemon *pokemon7 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.76297984117803 andLongitude:-122.47702360153197];
+        Pokemon *pokemon8 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.788335748021495 andLongitude:-122.43685483932494];
+        Pokemon *pokemon9 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.804024068552096 andLongitude:-122.42804646492004];
+        Pokemon *pokemon10 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.80851673221186 andLongitude:-122.41245210170747];
+        Pokemon *pokemon11 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.80226507389669 andLongitude:-122.4129295349121];
+        Pokemon *pokemon12 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77311476694162 andLongitude:-122.44287371635437];
+        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4, pokemon5, pokemon6, pokemon7, pokemon8, pokemon9, pokemon10, pokemon11, pokemon12]];
+    }
 }
 
 - (void)startTimer {
@@ -159,7 +172,7 @@
 }
 
 #pragma mark 搜索请求
-- (void)searchRequestWithLongitude:(NSString *)longitude andLatitude:(NSString *)latitude andPokemonId:(NSInteger)pokemonId {
+- (void)searchRequestWithPokemonId:(NSInteger)pokemonId andLatitude:(NSString *)latitude andLongitude:(NSString *)longitude {
     NSString *urlString = [NSString stringWithFormat:@"https://pokevision.com/map/data/%@/%@", latitude, longitude];
     
     NSLog(@"%@", urlString);
@@ -174,10 +187,12 @@
         
         // 异步
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-            [userDefaults setValue:longitude forKey:saveLongitude];
-            [userDefaults setValue:latitude forKey:saveLatitude];
-            [userDefaults setInteger:pokemonId forKey:savePokemonFindId];
+            if (_pokemonSearchType == PokemonSearchTypeDefault) { // 默认是单点定位搜索的话，存储搜索条件
+                NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                [userDefaults setValue:longitude forKey:saveLongitude];
+                [userDefaults setValue:latitude forKey:saveLatitude];
+                [userDefaults setInteger:pokemonId forKey:savePokemonFindId];
+            }
             
             BOOL isFinded = NO;
             NSDictionary *targetDict;
@@ -222,13 +237,14 @@
     }
     
     _emptyLocationTipLabel.hidden = YES;
-    CLLocation *location = _moreLocationArray[indexPath.row];
+    Pokemon *pokemon = _moreLocationArray[indexPath.row];
     
-    NSString *longitude = [NSString stringWithFormat:@"%f", location.coordinate.longitude];
-    NSString *latitude = [NSString stringWithFormat:@"%f", location.coordinate.latitude];
+    NSString *pokemonId = [NSString stringWithFormat:@"%ld", (long)pokemon.pokemonId];
+    NSString *longitude = [NSString stringWithFormat:@"%f", pokemon.longitude];
+    NSString *latitude = [NSString stringWithFormat:@"%f", pokemon.latitude];
     
-    cell.textLabel.text = latitude;
-    cell.detailTextLabel.text = longitude;
+    cell.textLabel.text = pokemonId;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@,%@", latitude, longitude];
     
     return cell;
 }
@@ -276,26 +292,22 @@
 #pragma mark event
 
 - (void)timerLoop {
-    NSInteger pokemonId = [[_pokemoIdTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] integerValue]; // 精灵ID
-    
     if (!_moreLocationSwitch.on && !_rangeSwitch.on) {
+        NSInteger pokemonId = [[_pokemoIdTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] integerValue]; // 精灵ID
         NSString *longitude = [_longitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 经度
         NSString *latitude = [_latitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 纬度
         
         if ([longitude isEqualToString:@""] || [latitude isEqualToString:@""] || !longitude || !latitude) return;
         
         [self showHudInView:self.view hint:nil];
-        [self searchRequestWithLongitude:longitude andLatitude:latitude andPokemonId:pokemonId];
+        [self searchRequestWithPokemonId:pokemonId andLatitude:latitude andLongitude:longitude];
         
     } else if (_moreLocationSwitch.on) {
         // 异步
         if (_moreLocationArray.count > 0) [self showHudInView:self.view hint:nil];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            for (CLLocation *location in _moreLocationArray) {
-                NSString *longitude = [NSString stringWithFormat:@"%f", location.coordinate.longitude];
-                NSString *latitude = [NSString stringWithFormat:@"%f", location.coordinate.latitude];
-                
-                [self searchRequestWithLongitude:longitude andLatitude:latitude andPokemonId:pokemonId];
+            for (Pokemon *pokemon in _moreLocationArray) {
+                [self searchRequestWithPokemonId:pokemon.pokemonId andLatitude:[NSString stringWithFormat:@"%f", pokemon.latitude] andLongitude:[NSString stringWithFormat:@"%f", pokemon.longitude]];
             }
             
             // 回到主线程显示
@@ -314,9 +326,9 @@
     [sender setTitle:@"已启动" forState:UIControlStateNormal];
     [_stopBtn setTitle:@"停止" forState:UIControlStateNormal];
     
-//    _longitudeTextField.enabled = NO;
-//    _latitudeTextField.enabled = NO;
-    _scrollView.userInteractionEnabled = NO;
+    _scrollView.userInteractionEnabled = _pokemonSearchType == PokemonSearchTypeMoreLocation;
+    _longitudeTextField.enabled = NO;
+    _latitudeTextField.enabled = NO;
     _pokemoIdTextField.enabled = NO;
     
     sender.selected = YES;
@@ -333,9 +345,9 @@
     [sender setTitle:@"已停止" forState:UIControlStateNormal];
     [_startBtn setTitle:@"开始" forState:UIControlStateNormal];
     
-//    _longitudeTextField.enabled = YES;
-//    _latitudeTextField.enabled = YES;
     _scrollView.userInteractionEnabled = YES;
+    _longitudeTextField.enabled = YES;
+    _latitudeTextField.enabled = YES;
     _pokemoIdTextField.enabled = YES;
     
     sender.selected = YES;
@@ -354,6 +366,8 @@
         return;
     }
     
+    _pokemonSearchType = sender.isOn ? PokemonSearchTypeRange : PokemonSearchTypeDefault;
+    
     if (sender.isOn) {
         _moreLocationSwitch.on = NO;
     }
@@ -370,7 +384,9 @@
     }
     
 //    _moreLocationView.hidden = !sender.isOn;
+    _pokemonSearchType = sender.isOn ? PokemonSearchTypeMoreLocation : PokemonSearchTypeDefault;
     [_scrollView setContentOffset:CGPointMake(sender.isOn ? kScreenSize.width : 0, 0) animated:YES];
+    
     if (sender.isOn) {
         _rangeSwitch.on = NO;
     }
@@ -380,9 +396,10 @@
 - (IBAction)addLocationAction:(UIButton *)sender {
     AddLocationViewController *addLocationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddLocationViewController"];
     
-    addLocationViewController.selectLocationBlock = ^(CLLocation *location) {
-        [_moreLocationArray addObject:location];
+    addLocationViewController.selectLocationBlock = ^(Pokemon *pokemon) {
+        [_moreLocationArray addObject:pokemon];
         [_moreLocationTableView reloadData];
+        [_scrollView setContentOffset:CGPointMake(kScreenSize.width, 0) animated:NO];
     };
     
     [self.navigationController pushViewController:addLocationViewController animated:YES];

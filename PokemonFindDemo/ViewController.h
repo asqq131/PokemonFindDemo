@@ -8,9 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, PokemonSearchType) {
+    PokemonSearchTypeDefault,
+    PokemonSearchTypeMoreLocation,
+    PokemonSearchTypeRange
+};
+
 @class AVAudioPlayer;
 @interface ViewController : UIViewController
 
+@property (assign, nonatomic) PokemonSearchType pokemonSearchType;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UITextField *longitudeTextField; // 经度编辑框
 @property (weak, nonatomic) IBOutlet UITextField *latitudeTextField; // 纬度编辑框
