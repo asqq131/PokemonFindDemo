@@ -179,14 +179,22 @@
             [userDefaults setValue:latitude forKey:saveLatitude];
             [userDefaults setInteger:pokemonId forKey:savePokemonFindId];
             
+            BOOL isFinded = NO;
+            NSDictionary *targetDict;
             for (NSDictionary *dict in responseArray) {
                 if ([dict[@"pokemonId"] integerValue] == pokemonId) {
-                    [self play]; // 放音乐提示
-                    UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"目标位置" message:[NSString stringWithFormat:@"纬度:%f---经度:%f", [dict[@"latitude"] floatValue], [dict[@"longitude"] floatValue]] delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
-                    [alerView show];
+                    isFinded = YES;
+                    targetDict = dict;
                     
                     break;
                 }
+            }
+            
+            if (isFinded) {
+                [self stopSearch:_stopBtn]; // 停止搜索
+                [self play]; // 放音乐提示
+                UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"目标位置" message:[NSString stringWithFormat:@"纬度:%f---经度:%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]] delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+                [alerView show];
             }
             
             // 回到主线程显示
