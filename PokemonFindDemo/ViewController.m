@@ -190,16 +190,14 @@
                 }
             }
             
-            if (isFinded) {
-                [self stopSearch:_stopBtn]; // 停止搜索
-                [self play]; // 放音乐提示
-                UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"目标位置" message:[NSString stringWithFormat:@"纬度:%f---经度:%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]] delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
-                [alerView show];
-            }
-            
             // 回到主线程显示
             dispatch_async(dispatch_get_main_queue(), ^{
-                // dosomething
+                if (isFinded) {
+                    [self stopSearch:_stopBtn]; // 停止搜索
+                    [self play]; // 放音乐提示
+                    UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"目标位置" message:[NSString stringWithFormat:@"纬度:%f---经度:%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]] delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+                    [alerView show];
+                }
             });
         });
         
