@@ -11,6 +11,7 @@
 @class AVAudioPlayer;
 @interface ViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UITextField *longitudeTextField; // 经度编辑框
 @property (weak, nonatomic) IBOutlet UITextField *latitudeTextField; // 纬度编辑框
 @property (weak, nonatomic) IBOutlet UITextField *pokemoIdTextField;

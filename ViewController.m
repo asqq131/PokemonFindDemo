@@ -13,6 +13,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "AddLocationViewController.h"
 #import "UIViewController+HUD.h"
+#import "WConstants.h"
 
 #define timeInterval 30
 
@@ -119,10 +120,11 @@
     _latitudeTextField.text = latitude;
     _pokemoIdTextField.text = [NSString stringWithFormat:@"%ld", (long)pokemonId];
     
-    _moreLocationView.hidden = YES;
     _moreLocationTableView.layer.borderColor = [UIColor colorWithRed:232.0/255.0 green:232.0/255.0 blue:232.0/255.0 alpha:1.0].CGColor;
     _moreLocationTableView.layer.borderWidth = 0.5;
     _moreLocationTableView.tableFooterView = [[UIView alloc] init];
+    
+    _rangeSwitch.enabled = NO;
 }
 
 - (void)startTimer {
@@ -306,8 +308,9 @@
     [sender setTitle:@"已启动" forState:UIControlStateNormal];
     [_stopBtn setTitle:@"停止" forState:UIControlStateNormal];
     
-    _longitudeTextField.enabled = NO;
-    _latitudeTextField.enabled = NO;
+//    _longitudeTextField.enabled = NO;
+//    _latitudeTextField.enabled = NO;
+    _scrollView.userInteractionEnabled = NO;
     _pokemoIdTextField.enabled = NO;
     
     sender.selected = YES;
@@ -324,8 +327,9 @@
     [sender setTitle:@"已停止" forState:UIControlStateNormal];
     [_startBtn setTitle:@"开始" forState:UIControlStateNormal];
     
-    _longitudeTextField.enabled = YES;
-    _latitudeTextField.enabled = YES;
+//    _longitudeTextField.enabled = YES;
+//    _latitudeTextField.enabled = YES;
+    _scrollView.userInteractionEnabled = YES;
     _pokemoIdTextField.enabled = YES;
     
     sender.selected = YES;
@@ -337,6 +341,7 @@
 #pragma mark 范围搜索
 - (IBAction)rangeSwitchValueChanged:(UISwitch *)sender {
     if (_timer) {
+        sender.on = !sender.isOn;
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"请先停止搜索" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
         [alertView show];
         
@@ -345,20 +350,21 @@
     
     if (sender.isOn) {
         _moreLocationSwitch.on = NO;
-        _moreLocationView.hidden = YES;
     }
 }
 
 #pragma mark 多重定位搜索
 - (IBAction)moreLocationSwitchValueChanged:(UISwitch *)sender {
     if (_timer) {
+        sender.on = !sender.isOn;
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"请先停止搜索" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
         [alertView show];
         
         return;
     }
     
-    _moreLocationView.hidden = !sender.isOn;
+//    _moreLocationView.hidden = !sender.isOn;
+    [_scrollView setContentOffset:CGPointMake(sender.isOn ? kScreenSize.width : 0, 0) animated:YES];
     if (sender.isOn) {
         _rangeSwitch.on = NO;
     }
