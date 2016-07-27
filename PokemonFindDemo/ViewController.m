@@ -102,7 +102,7 @@
     
     // 自定义添加搜索精灵坐标
     _isSearchLapras = YES;
-    _isSearchSnorlax = YES;
+    _isSearchSnorlax = NO;
     [self customAddLocation];
     _emptyLocationTipLabel.hidden = !(_moreLocationArray.count == 0);
 }
@@ -118,7 +118,8 @@
         Pokemon *pokemon3 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77484901 andLongitude:-122.51171529];
         Pokemon *pokemon4 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.810062 andLongitude:-122.421890];
         Pokemon *pokemon5 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.778296157302 andLongitude:-122.51442288082];
-        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4, pokemon5]];
+        Pokemon *pokemon6 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.773916172517694 andLongitude:-122.51287400722502];
+        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4, pokemon5, pokemon6]];
         
     }
     
@@ -211,6 +212,10 @@
                 if (isFinded) {
                     [self stopSearch:_stopBtn]; // 停止搜索
                     [self play]; // 放音乐提示
+                    
+                    NSString *findedUrlString = [NSString stringWithFormat:@"https://pokevision.com/#/@/%f,%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]];
+                    NSLog(@"%@", findedUrlString);
+                    
                     UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"目标位置" message:[NSString stringWithFormat:@"纬度:%f---经度:%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]] delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
                     [alerView show];
                 }
@@ -421,7 +426,7 @@
         //初始化播放器，注意这里的Url参数只能时文件路径，不支持HTTP Url
         _audioPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:url error:&error];
         //设置播放器属性
-        _audioPlayer.numberOfLoops = 0; //设置为0不循环
+        _audioPlayer.numberOfLoops = -1; //设置为0不循环,-1为一直循环
         _audioPlayer.delegate = self;
         [_audioPlayer prepareToPlay]; //加载音频文件到缓存
         
