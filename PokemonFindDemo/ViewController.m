@@ -17,19 +17,20 @@
 #import "Pokemon.h"
 #import "NSString+InvalidNull.h"
 
-#define timeInterval 30
+#define kTimeInterval 30
+#define kRangeTimeInterval 10
 
-#define saveLongitude @"saveLongitude"
-#define saveLatitude @"saveLatitude"
-#define savePokemonFindId @"savePokemonFindId"
-#define savePokemonFindName @"savePokemonFindName"
+#define kSaveLongitude @"saveLongitude"
+#define kSaveLatitude @"saveLatitude"
+#define kSavePokemonFindId @"savePokemonFindId"
+#define kSavePokemonFindName @"savePokemonFindName"
 
-#define defaultPokemonFindId 1
+#define kDefaultPokemonFindId 1
 //#define defaultLongitude @"-122.477388381958"
 //#define defaultLatitude @"37.79937429771308"
 
-#define defaultLongitude @"-122.487253" // 经度
-#define defaultLatitude @"37.770758" // 纬度
+#define kDefaultLongitude @"-122.487253" // 经度
+#define kDefaultLatitude @"37.770758" // 纬度
 
 #define kMusicFile @"music.mp3"
 
@@ -42,6 +43,8 @@
     
     BOOL _isSearchSnorlax; // 是否搜索卡比兽
     BOOL _isSearchLapras; // 是否搜索乘龙
+    
+    NSInteger _timeInterval;
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *emptyLocationTipLabel;
@@ -86,19 +89,21 @@
     self.title = @"pokemon小精灵搜索";
     _moreLocationArray = [NSMutableArray array];
     
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    NSInteger pokemonId = [userDefaults integerForKey:savePokemonFindId];
-    NSString *pokemonName = [userDefaults valueForKey:savePokemonFindName];
-    NSString *latitude = [NSString stringWithFormat:@"%f", [userDefaults floatForKey:saveLatitude]]; // 纬度
-    NSString *longitude = [NSString stringWithFormat:@"%f", [userDefaults floatForKey:saveLongitude]]; // 经度
+    self.pokemonSearchType = PokemonSearchTypeDefault;
     
-    if (!longitude || !latitude) {
-        longitude = defaultLongitude;
-        latitude = defaultLatitude;
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSInteger pokemonId = [userDefaults integerForKey:kSavePokemonFindId];
+    NSString *pokemonName = [userDefaults valueForKey:kSavePokemonFindName];
+    NSString *latitude = [NSString stringWithFormat:@"%f", [userDefaults floatForKey:kSaveLatitude]]; // 纬度
+    NSString *longitude = [NSString stringWithFormat:@"%f", [userDefaults floatForKey:kSaveLongitude]]; // 经度
+    
+    if (!longitude || !latitude || [latitude floatValue] == 0 || [longitude floatValue] == 0) {
+        longitude = kDefaultLongitude;
+        latitude = kDefaultLatitude;
     }
     
-    if (!pokemonId) {
-        pokemonId = defaultPokemonFindId;
+    if (!pokemonId || pokemonId == 0) {
+        pokemonId = kDefaultPokemonFindId;
     }
     
     // 设置定点搜索编辑框内容
@@ -133,7 +138,7 @@
 }
 
 - (void)customAddLocation {
-    NSInteger pokemonId = defaultPokemonFindId;
+    NSInteger pokemonId = kDefaultPokemonFindId;
     
     // 菊石兽
     Pokemon *pokemon1 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.76512991848991 andLongitude:-122.51146316528319];
@@ -176,7 +181,7 @@
 }
 
 - (void)startTimer {
-    _timer = [NSTimer scheduledTimerWithTimeInterval:timeInterval target:self selector:@selector(timerLoop) userInfo:nil repeats:YES];
+    _timer = [NSTimer scheduledTimerWithTimeInterval:_timeInterval target:self selector:@selector(timerLoop) userInfo:nil repeats:YES];
     [_timer fire];
 }
 
@@ -224,12 +229,12 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             if (_pokemonSearchType == PokemonSearchTypeDefault) { // 默认是单点定位搜索的话，存储搜索条件
                 NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-                [userDefaults setInteger:pokemon.pokemonId forKey:savePokemonFindId];
-                [userDefaults setFloat:pokemon.latitude forKey:saveLatitude];
-                [userDefaults setFloat:pokemon.longitude forKey:saveLongitude];
+                [userDefaults setInteger:pokemon.pokemonId forKey:kSavePokemonFindId];
+                [userDefaults setFloat:pokemon.latitude forKey:kSaveLatitude];
+                [userDefaults setFloat:pokemon.longitude forKey:kSaveLongitude];
                 
                 if (pokemon.name && ![pokemon.name isEqualToString:@""]) {
-                    [userDefaults setValue:pokemon.name forKey:savePokemonFindName];
+                    [userDefaults setValue:pokemon.name forKey:kSavePokemonFindName];
                 }
             }
             
@@ -471,9 +476,12 @@
     [_stopBtn setTitle:@"停止" forState:UIControlStateNormal];
     
     _scrollView.userInteractionEnabled = _pokemonSearchType == PokemonSearchTypeMoreLocation;
-    _longitudeTextField.enabled = NO;
-    _latitudeTextField.enabled = NO;
-    _pokemoIdTextField.enabled = NO;
+    if (_pokemonSearchType == PokemonSearchTypeDefault) {
+        _longitudeTextField.enabled = NO;
+        _latitudeTextField.enabled = NO;
+        _pokemoIdTextField.enabled = NO;
+        _pokemonNameTextField.enabled = NO;
+    }
     
     sender.selected = YES;
     _stopBtn.selected = NO;
@@ -490,9 +498,12 @@
     [_startBtn setTitle:@"开始" forState:UIControlStateNormal];
     
     _scrollView.userInteractionEnabled = YES;
-    _longitudeTextField.enabled = YES;
-    _latitudeTextField.enabled = YES;
-    _pokemoIdTextField.enabled = YES;
+    if (_pokemonSearchType == PokemonSearchTypeDefault) {
+        _longitudeTextField.enabled = YES;
+        _latitudeTextField.enabled = YES;
+        _pokemoIdTextField.enabled = YES;
+        _pokemonNameTextField.enabled = YES;
+    }
     
     sender.selected = YES;
     _startBtn.selected = NO;
@@ -510,7 +521,7 @@
         return;
     }
     
-    _pokemonSearchType = sender.isOn ? PokemonSearchTypeRange : PokemonSearchTypeDefault;
+    self.pokemonSearchType = sender.isOn ? PokemonSearchTypeRange : PokemonSearchTypeDefault;
     [_scrollView setContentOffset:CGPointMake(sender.isOn ? -kScreenSize.width : 0, 0) animated:YES];
     
     if (sender.isOn) {
@@ -529,7 +540,7 @@
     }
     
 //    _moreLocationView.hidden = !sender.isOn;
-    _pokemonSearchType = sender.isOn ? PokemonSearchTypeMoreLocation : PokemonSearchTypeDefault;
+    self.pokemonSearchType = sender.isOn ? PokemonSearchTypeMoreLocation : PokemonSearchTypeDefault;
     [_scrollView setContentOffset:CGPointMake(sender.isOn ? kScreenSize.width : 0, 0) animated:YES];
     
     if (sender.isOn) {
@@ -575,6 +586,12 @@
     }
     
     return _audioPlayer;
+}
+
+- (void)setPokemonSearchType:(PokemonSearchType)pokemonSearchType {
+    _pokemonSearchType = pokemonSearchType;
+    
+    _timeInterval = pokemonSearchType == PokemonSearchTypeRange ? kRangeTimeInterval : kTimeInterval;
 }
 
 @end
