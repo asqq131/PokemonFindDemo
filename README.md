@@ -11,7 +11,7 @@
 ![image](https://github.com/asqq131/PokemonFindDemo/blob/master/image4.png)
 
 ##三、范围搜索
-###1.范围搜索页面
+###1.范围搜索页面 ---> 全局搜索可搜索多种精灵，但请以/隔开精灵ID或精灵名称，例:1/2/3  皮卡丘/小火龙
 ![image](https://github.com/asqq131/PokemonFindDemo/blob/master/image5.png)
 
 ###2.搜索结果显示

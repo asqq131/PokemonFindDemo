@@ -15,6 +15,7 @@
 #import "UIViewController+HUD.h"
 #import "WConstants.h"
 #import "Pokemon.h"
+#import "NSString+InvalidNull.h"
 
 #define timeInterval 30
 
@@ -291,10 +292,48 @@
     }];
 }
 
-- (void)rangeSearchPokemon {
+#pragma mark 单点定位搜索
+- (BOOL)oneLocationSearchPokemon {
+    NSInteger pokemonId = [[_pokemoIdTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] integerValue]; // 精灵ID
+    NSString *pokemonName = [_pokemonNameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 精灵名称
+    NSString *longitude = [_longitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 经度
+    NSString *latitude = [_latitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 纬度
+    
+    if (pokemonId == 0 || [[NSString stringUtils:latitude] isEqualToString:@""] || [[NSString stringUtils:longitude] isEqualToString:@""]) return NO;
+    
+    [self showHudInView:self.view hint:nil];
+    [self searchRequestWithPokemon:[Pokemon pokemonWithPokemonId:pokemonId andName:pokemonName andLatitude:[latitude floatValue] andLongitude:[longitude floatValue]]];
+    
+    return YES;
+}
+
+#pragma mark 多重定位搜索
+- (BOOL)moreLocationSearchPokemon {
+    // 异步
+    if (_moreLocationArray.count == 0) return NO;
+    
+    [self showHudInView:self.view hint:nil];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (Pokemon *pokemon in _moreLocationArray) {
+            [self searchRequestWithPokemon:pokemon];
+        }
+        
+        // 回到主线程显示
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // dosomething
+        });
+    });
+    
+    return YES;
+}
+
+#pragma mark 范围搜索
+- (BOOL)rangeSearchPokemon {
     // 精灵id
     NSString *rangePokemonIds = [_rangePokemonIdTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    _rangePokemonIds = [rangePokemonIds componentsSeparatedByString:@"/"];
+    if (![[NSString stringUtils:rangePokemonIds] isEqualToString:@""]) {
+        _rangePokemonIds = [rangePokemonIds componentsSeparatedByString:@"/"];
+    }
     
     // 精灵名称
     NSString *rangePokemonNames = [_rangePokemonNameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -310,8 +349,14 @@
     CGFloat latitude = [self randFloatBetween:[minLatitude floatValue] and:[maxLatitude floatValue]];
     CGFloat longitude = [self randFloatBetween:[minLongitude floatValue] and:[maxLongitude floatValue]];
     
+    if (_rangePokemonIds.count == 0 || [[NSString stringUtils:minLatitude] isEqualToString:@""] || [[NSString stringUtils:maxLatitude] isEqualToString:@""] || [[NSString stringUtils:minLongitude] isEqualToString:@""] || [[NSString stringUtils:maxLongitude] isEqualToString:@""]) {
+        return NO;
+    }
+    
     if (_rangePokemonIds.count > 0) [self showHudInView:self.view hint:nil];
     [self searchRequestWithPokemon:[Pokemon pokemonWithPokemonId:0 andName:nil andLatitude:latitude andLongitude:longitude]];
+    
+    return YES;
 }
 
 #pragma mark 浮点随机数
@@ -398,33 +443,22 @@
 #pragma mark event
 
 - (void)timerLoop {
-    if (!_moreLocationSwitch.isOn && !_rangeSwitch.isOn) {
-        NSInteger pokemonId = [[_pokemoIdTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] integerValue]; // 精灵ID
-        NSString *pokemonName = [_pokemonNameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 精灵名称
-        NSString *longitude = [_longitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 经度
-        NSString *latitude = [_latitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 纬度
+    BOOL searchValid;
+    if (!_moreLocationSwitch.isOn && !_rangeSwitch.isOn) { // 单点定位
+        searchValid = [self oneLocationSearchPokemon];
         
-        if ([longitude isEqualToString:@""] || [latitude isEqualToString:@""] || !longitude || !latitude) return;
+    } else if (_moreLocationSwitch.isOn) { // 多重定位
+        searchValid = [self moreLocationSearchPokemon];
         
-        [self showHudInView:self.view hint:nil];
-        [self searchRequestWithPokemon:[Pokemon pokemonWithPokemonId:pokemonId andName:pokemonName andLatitude:[latitude floatValue] andLongitude:[longitude floatValue]]];
+    } else if (_rangeSwitch.isOn) { // 范围搜索
+        searchValid = [self rangeSearchPokemon];
+    }
+    
+    if (!searchValid) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"请填写有效数据！" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+        [alertView show];
         
-    } else if (_moreLocationSwitch.isOn) {
-        // 异步
-        if (_moreLocationArray.count > 0) [self showHudInView:self.view hint:nil];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            for (Pokemon *pokemon in _moreLocationArray) {
-                [self searchRequestWithPokemon:pokemon];
-            }
-            
-            // 回到主线程显示
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // dosomething
-            });
-        });
-        
-    } else if (_rangeSwitch.isOn) {
-        [self rangeSearchPokemon];
+        [self stopSearch:_stopBtn];
     }
 }
 

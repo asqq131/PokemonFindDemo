@@ -30,6 +30,7 @@
 		045686911D42102F00106609 /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 0456867E1D42102F00106609 /* UIProgressView+AFNetworking.m */; };
 		045686921D42102F00106609 /* UIRefreshControl+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 045686801D42102F00106609 /* UIRefreshControl+AFNetworking.m */; };
 		045686931D42102F00106609 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 045686821D42102F00106609 /* UIWebView+AFNetworking.m */; };
+		04ACBC831D48C04100170162 /* NSString+InvalidNull.m in Sources */ = {isa = PBXBuildFile; fileRef = 04ACBC821D48C04100170162 /* NSString+InvalidNull.m */; };
 		944DBF051D479E8100325443 /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 944DBF041D479E8100325443 /* music.mp3 */; };
 		944DBF091D479EA600325443 /* AddLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944DBF081D479EA600325443 /* AddLocationViewController.m */; };
 		944DBF131D479EF400325443 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 944DBF0F1D479EF400325443 /* LICENSE */; };
@@ -85,6 +86,8 @@
 		045686801D42102F00106609 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
 		045686811D42102F00106609 /* UIWebView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+AFNetworking.h"; sourceTree = "<group>"; };
 		045686821D42102F00106609 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
+		04ACBC811D48C04100170162 /* NSString+InvalidNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+InvalidNull.h"; sourceTree = "<group>"; };
+		04ACBC821D48C04100170162 /* NSString+InvalidNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+InvalidNull.m"; sourceTree = "<group>"; };
 		944DBF041D479E8100325443 /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music.mp3; sourceTree = "<group>"; };
 		944DBF061D479E9800325443 /* WConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WConstants.h; sourceTree = "<group>"; };
 		944DBF071D479EA600325443 /* AddLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddLocationViewController.h; sourceTree = "<group>"; };
@@ -231,6 +234,8 @@
 		944DBF161D479EFF00325443 /* Categorys */ = {
 			isa = PBXGroup;
 			children = (
+				04ACBC811D48C04100170162 /* NSString+InvalidNull.h */,
+				04ACBC821D48C04100170162 /* NSString+InvalidNull.m */,
 				944DBF171D479EFF00325443 /* UIViewController+HUD.h */,
 				944DBF181D479EFF00325443 /* UIViewController+HUD.m */,
 			);
@@ -334,6 +339,7 @@
 				944DBF1C1D47A72500325443 /* Pokemon.m in Sources */,
 				045686831D42102F00106609 /* AFHTTPSessionManager.m in Sources */,
 				0456868B1D42102F00106609 /* AFAutoPurgingImageCache.m in Sources */,
+				04ACBC831D48C04100170162 /* NSString+InvalidNull.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

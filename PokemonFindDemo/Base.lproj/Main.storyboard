@@ -159,8 +159,8 @@
                                             <constraint firstItem="ehb-aR-HMC" firstAttribute="leading" secondItem="Fsz-zy-gdN" secondAttribute="leading" id="zD4-7u-XgB"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZnX-V0-yoE">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="197"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZnX-V0-yoE">
+                                        <rect key="frame" x="-375" y="0.0" width="375" height="197"/>
                                         <subviews>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cMS-D8-Aui">
                                                 <rect key="frame" x="76" y="3" width="100" height="30"/>
