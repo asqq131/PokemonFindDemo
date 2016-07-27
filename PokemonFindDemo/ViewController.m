@@ -117,7 +117,8 @@
         Pokemon *pokemon2 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77492950 andLongitude:-122.4194155];
         Pokemon *pokemon3 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.77484901 andLongitude:-122.51171529];
         Pokemon *pokemon4 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.810062 andLongitude:-122.421890];
-        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4]];
+        Pokemon *pokemon5 = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:37.778296157302 andLongitude:-122.51442288082];
+        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4, pokemon5]];
         
     }
     
