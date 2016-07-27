@@ -26,6 +26,7 @@
 
 - (void)comfingAction:(UIBarButtonItem *)sender {
     NSInteger pokemonId = [[_pokemoIdTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] integerValue]; // 精灵ID
+    NSString *name = [_nameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 精灵名
     NSString *longitude = [_longitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 经度
     NSString *latitude = [_latitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 纬度
     
@@ -36,7 +37,7 @@
         return;
     }
     
-    Pokemon *pokemon = [Pokemon pokemonWithPokemonId:pokemonId andLatitude:[latitude floatValue] andLongitude:[longitude floatValue]];
+    Pokemon *pokemon = [Pokemon pokemonWithPokemonId:pokemonId andName:name andLatitude:[latitude floatValue] andLongitude:[longitude floatValue]];
     _selectLocationBlock(pokemon);
     [self.navigationController popViewControllerAnimated:YES];
 }

@@ -13,6 +13,7 @@
 
 @property (nonatomic, copy) void(^selectLocationBlock)(Pokemon *pokemon);
 
+@property (weak, nonatomic) IBOutlet UITextField *nameTextField;
 @property (weak, nonatomic) IBOutlet UITextField *pokemoIdTextField;
 @property (weak, nonatomic) IBOutlet UITextField *longitudeTextField; // 经度编辑框
 @property (weak, nonatomic) IBOutlet UITextField *latitudeTextField; // 纬度编辑框

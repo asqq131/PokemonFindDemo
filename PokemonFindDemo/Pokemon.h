@@ -11,10 +11,11 @@
 @interface Pokemon : NSObject
 
 @property (nonatomic, assign) NSInteger pokemonId; // 精灵ID
+@property (nonatomic, copy) NSString *name; // 名字
 @property (nonatomic, assign) float longitude; // 经度
 @property (nonatomic, assign) float latitude; // 纬度
 
-- (id)initWithPokemonId:(NSInteger)pokemonId andLatitude:(float)latitude andLongitude:(float)longitude;
-+ (id)pokemonWithPokemonId:(NSInteger)pokemonId andLatitude:(float)latitude andLongitude:(float)longitude;
+- (id)initWithPokemonId:(NSInteger)pokemonId andName:(NSString *)name andLatitude:(float)latitude andLongitude:(float)longitude;
++ (id)pokemonWithPokemonId:(NSInteger)pokemonId andName:(NSString *)name andLatitude:(float)latitude andLongitude:(float)longitude;
 
 @end

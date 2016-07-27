@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, PokemonSearchType) {
 @property (weak, nonatomic) IBOutlet UITextField *longitudeTextField; // 经度编辑框
 @property (weak, nonatomic) IBOutlet UITextField *latitudeTextField; // 纬度编辑框
 @property (weak, nonatomic) IBOutlet UITextField *pokemoIdTextField;
+@property (weak, nonatomic) IBOutlet UITextField *pokemonNameTextField;
 @property (weak, nonatomic) IBOutlet UIButton *startBtn;
 @property (weak, nonatomic) IBOutlet UIButton *stopBtn;
 @property (weak, nonatomic) IBOutlet UISwitch *rangeSwitch;

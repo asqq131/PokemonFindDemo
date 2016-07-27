@@ -10,9 +10,10 @@
 
 @implementation Pokemon
 
-- (id)initWithPokemonId:(NSInteger)pokemonId andLatitude:(float)latitude andLongitude:(float)longitude {
+- (id)initWithPokemonId:(NSInteger)pokemonId andName:(NSString *)name andLatitude:(float)latitude andLongitude:(float)longitude {
     if (self = [super init]) {
         self.pokemonId = pokemonId;
+        self.name = name;
         self.longitude = longitude;
         self.latitude = latitude;
     }
@@ -20,8 +21,8 @@
     return self;
 }
 
-+ (id)pokemonWithPokemonId:(NSInteger)pokemonId andLatitude:(float)latitude andLongitude:(float)longitude {
-    return [[self alloc] initWithPokemonId:pokemonId andLatitude:latitude andLongitude:longitude];
++ (id)pokemonWithPokemonId:(NSInteger)pokemonId andName:(NSString *)name andLatitude:(float)latitude andLongitude:(float)longitude {
+    return [[self alloc] initWithPokemonId:pokemonId andName:name andLatitude:latitude andLongitude:longitude];
 }
 
 @end
