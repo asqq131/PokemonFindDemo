@@ -9,7 +9,7 @@
 #import "AddLocationViewController.h"
 #import "Pokemon.h"
 
-@interface AddLocationViewController ()
+@interface AddLocationViewController () <UITextFieldDelegate>
 
 @end
 
@@ -30,8 +30,8 @@
     NSString *longitude = [_longitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 经度
     NSString *latitude = [_latitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]; // 纬度
     
-    if ([longitude isEqualToString:@""] || [latitude isEqualToString:@""] || !longitude || !latitude) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"请填写经/纬度" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    if ([longitude isEqualToString:@""] || [latitude isEqualToString:@""] || !longitude || !latitude || pokemonId == 0) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"请填写所需信息" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
         [alertView show];
         
         return;
@@ -40,6 +40,16 @@
     Pokemon *pokemon = [Pokemon pokemonWithPokemonId:pokemonId andName:name andLatitude:[latitude floatValue] andLongitude:[longitude floatValue]];
     _selectLocationBlock(pokemon);
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    if ([string isEqualToString:@"\n"]) {
+        [textField resignFirstResponder];
+        
+        return NO;
+    }
+    
+    return YES;
 }
 
 @end

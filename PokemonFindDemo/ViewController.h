@@ -19,19 +19,29 @@ typedef NS_ENUM(NSInteger, PokemonSearchType) {
 
 @property (assign, nonatomic) PokemonSearchType pokemonSearchType;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
-@property (weak, nonatomic) IBOutlet UITextField *longitudeTextField; // 经度编辑框
-@property (weak, nonatomic) IBOutlet UITextField *latitudeTextField; // 纬度编辑框
-@property (weak, nonatomic) IBOutlet UITextField *pokemoIdTextField;
-@property (weak, nonatomic) IBOutlet UITextField *pokemonNameTextField;
+
 @property (weak, nonatomic) IBOutlet UIButton *startBtn;
 @property (weak, nonatomic) IBOutlet UIButton *stopBtn;
 @property (weak, nonatomic) IBOutlet UISwitch *rangeSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *moreLocationSwitch;
 
 @property (weak, nonatomic) IBOutlet UIView *oneLocationView;
+@property (weak, nonatomic) IBOutlet UITextField *longitudeTextField; // 经度编辑框
+@property (weak, nonatomic) IBOutlet UITextField *latitudeTextField; // 纬度编辑框
+@property (weak, nonatomic) IBOutlet UITextField *pokemoIdTextField;
+@property (weak, nonatomic) IBOutlet UITextField *pokemonNameTextField;
+
 @property (weak, nonatomic) IBOutlet UIView *moreLocationView;
 @property (weak, nonatomic) IBOutlet UITableView *moreLocationTableView;
 @property (weak, nonatomic) IBOutlet UIButton *addLocationBtn;
+
+@property (weak, nonatomic) IBOutlet UIView *rangeView;
+@property (weak, nonatomic) IBOutlet UITextField *rangePokemonIdTextField;
+@property (weak, nonatomic) IBOutlet UITextField *rangePokemonNameTextField;
+@property (weak, nonatomic) IBOutlet UITextField *minLatitudeTextField;
+@property (weak, nonatomic) IBOutlet UITextField *maxLatitudeTextField;
+@property (weak, nonatomic) IBOutlet UITextField *minLongitudeTextField;
+@property (weak, nonatomic) IBOutlet UITextField *maxLongitudeTextField;
 
 @property (nonatomic,strong) AVAudioPlayer *audioPlayer;//播放器
 
