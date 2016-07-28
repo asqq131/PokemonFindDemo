@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface Pokemon : NSObject
+@interface Pokemon : NSObject <NSCoding>
 
 @property (nonatomic, assign) NSInteger pokemonId; // 精灵ID
 @property (nonatomic, copy) NSString *name; // 名字

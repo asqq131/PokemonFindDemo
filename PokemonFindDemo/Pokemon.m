@@ -25,4 +25,22 @@
     return [[self alloc] initWithPokemonId:pokemonId andName:name andLatitude:latitude andLongitude:longitude];
 }
 
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super init]) {
+        self.pokemonId = [[aDecoder decodeObjectForKey:@"pokemonId"] integerValue];
+        self.name = [aDecoder decodeObjectForKey:@"name"];
+        self.latitude = [[aDecoder decodeObjectForKey:@"latitude"] floatValue];
+        self.longitude = [[aDecoder decodeObjectForKey:@"longitude"] floatValue];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:[NSString stringWithFormat:@"%ld", (long)self.pokemonId] forKey:@"pokemonId"];
+    [aCoder encodeObject:self.name forKey:@"name"];
+    [aCoder encodeObject:[NSString stringWithFormat:@"%f", self.latitude] forKey:@"latitude"];
+    [aCoder encodeObject:[NSString stringWithFormat:@"%f", self.longitude] forKey:@"longitude"];
+}
+
 @end

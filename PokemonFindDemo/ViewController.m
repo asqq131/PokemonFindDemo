@@ -25,10 +25,17 @@
 #define kSavePokemonFindId @"savePokemonFindId"
 #define kSavePokemonFindName @"savePokemonFindName"
 
-#define kDefaultPokemonFindId 1
-//#define defaultLongitude @"-122.477388381958"
-//#define defaultLatitude @"37.79937429771308"
+#define kSaveRangeMinLongitude @"saveRangeMinLongitude"
+#define kSaveRangeMaxLongitude @"saveRangeMaxLongitude"
+#define kSaveRangeMinLatitude @"saveRangeMinLatitude"
+#define kSaveRangeMaxLatitude @"saveRangeMaxLatitude"
+#define kSaveRangePokemonFindId @"saveRangePokemonFindId"
+#define kSaveRangePokemonFindName @"saveRangePokemonFindName"
 
+#define kSaveMoreLocationArray @"saveMoreLocationArray"
+
+#define kDefaultPokemonFindId 1
+#define kDefaultPokemonName @"妙蛙种子"
 #define kDefaultLongitude @"-122.487253" // 经度
 #define kDefaultLatitude @"37.770758" // 纬度
 
@@ -45,6 +52,13 @@
     BOOL _isSearchLapras; // 是否搜索乘龙
     
     NSInteger _timeInterval;
+    
+    NSString *_minLatitude;
+    NSString *_maxLatitude;
+    NSString *_minLongitude;
+    NSString *_maxLongitude;
+    
+    NSMutableArray *_moreLocationKeyedArchiverArray;
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *emptyLocationTipLabel;
@@ -88,9 +102,23 @@
     
     self.title = @"pokemon小精灵搜索";
     _moreLocationArray = [NSMutableArray array];
+    _moreLocationKeyedArchiverArray = [NSMutableArray array];
     
     self.pokemonSearchType = PokemonSearchTypeDefault;
     
+    [self setupOneLocationGUI]; // 配置单点定位搜索数据
+    [self setupMoreLocationGUI]; // 配置多重定位搜索数据
+    [self setupRangeSearchGUI]; // 配置全局搜索数据
+    
+    // 自定义添加搜索精灵坐标
+    _isSearchLapras = YES;
+    _isSearchSnorlax = YES;
+    [self customAddLocation];
+    _emptyLocationTipLabel.hidden = !(_moreLocationArray.count == 0);
+}
+
+#pragma mark 配置单点定位搜索数据
+- (void)setupOneLocationGUI {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     NSInteger pokemonId = [userDefaults integerForKey:kSavePokemonFindId];
     NSString *pokemonName = [userDefaults valueForKey:kSavePokemonFindName];
@@ -106,77 +134,144 @@
         pokemonId = kDefaultPokemonFindId;
     }
     
+    if ([[NSString stringUtils:pokemonName] isEqualToString:@""]) {
+        pokemonName = kDefaultPokemonName;
+    }
+    
     // 设置定点搜索编辑框内容
     _pokemoIdTextField.text = [NSString stringWithFormat:@"%ld", (long)pokemonId];
     _pokemonNameTextField.text = pokemonName ? pokemonName : @"";
     _longitudeTextField.text = longitude;
     _latitudeTextField.text = latitude;
-    
+}
+
+#pragma mark 配置多重定位搜索数据
+- (void)setupMoreLocationGUI {
     // 多重搜索tableview样式设置
     _moreLocationTableView.layer.borderColor = [UIColor colorWithRed:232.0/255.0 green:232.0/255.0 blue:232.0/255.0 alpha:1.0].CGColor;
     _moreLocationTableView.layer.borderWidth = 0.5;
     _moreLocationTableView.tableFooterView = [[UIView alloc] init];
+}
+
+#pragma mark 配置全局搜索数据
+- (void)setupRangeSearchGUI {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSString *rangePokemonIds = [userDefaults valueForKey:kSaveRangePokemonFindId];
+    NSString *rangePokemonNames = [userDefaults valueForKey:kSaveRangePokemonFindName];
+    NSString *minLatitude = [userDefaults valueForKey:kSaveRangeMinLatitude];
+    NSString *maxLatitude = [userDefaults valueForKey:kSaveRangeMaxLatitude];
+    NSString *minLongitude = [userDefaults valueForKey:kSaveRangeMinLongitude];
+    NSString *maxLongitude = [userDefaults valueForKey:kSaveRangeMaxLongitude];
     
-    // 自定义添加搜索精灵坐标
-    _isSearchLapras = YES;
-    _isSearchSnorlax = NO;
-    [self customAddLocation];
-    _emptyLocationTipLabel.hidden = !(_moreLocationArray.count == 0);
+    if ([[NSString stringUtils:minLatitude] isEqualToString:@""] || [[NSString stringUtils:minLatitude] isEqualToString:@""] || [[NSString stringUtils:minLatitude] isEqualToString:@""] || [[NSString stringUtils:minLatitude] isEqualToString:@""] || [[NSString stringUtils:minLatitude] isEqualToString:@""]) {
+        rangePokemonIds = @"1/41";
+        rangePokemonNames = @"妙蛙种子/超音蝠";
+        minLatitude = @"37.801035";
+        maxLatitude = @"37.807003";
+        minLongitude = @"-122.4779033";
+        maxLongitude = @"-122.4722385";
+        
+    }
     
-    /**
-     * 1/41
-     * 妙蛙种子/超音蝠
-     * 37.801035 -> 37.807003
-     * -122.4779033 -> -122.4722385
-     */
-    _rangePokemonIdTextField.text = @"1/41";
-    _rangePokemonNameTextField.text = @"妙蛙种子/超音蝠";
-    _minLatitudeTextField.text = @"37.801035";
-    _maxLatitudeTextField.text = @"37.807003";
-    _minLongitudeTextField.text = @"-122.4779033";
-    _maxLongitudeTextField.text = @"-122.4722385";
+    _rangePokemonIdTextField.text = rangePokemonIds;
+    _rangePokemonNameTextField.text = rangePokemonNames;
+    _minLatitudeTextField.text = minLatitude;
+    _maxLatitudeTextField.text = maxLatitude;
+    _minLongitudeTextField.text = minLongitude;
+    _maxLongitudeTextField.text = maxLongitude;
 }
 
 - (void)customAddLocation {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    _moreLocationKeyedArchiverArray = [NSMutableArray arrayWithArray:[userDefaults valueForKey:kSaveMoreLocationArray]];
+    if (_moreLocationKeyedArchiverArray.count == 0) {
+        // 异步
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self addDefaultMoreLocationData]; // 添加默认数据
+            
+//            NSMutableArray *savePokemons = [NSMutableArray array];
+            for (Pokemon *pokemon in _moreLocationArray) {
+                // 使用NSCoding协议归档
+                NSData *d = [NSKeyedArchiver archivedDataWithRootObject:pokemon];
+                // 归档数据存入数组中
+                [_moreLocationKeyedArchiverArray addObject:d];
+            }
+            
+            // 回到主线程显示
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // 把归档数组存入本地NSUserDefaults
+                [userDefaults setValue:_moreLocationKeyedArchiverArray forKey:kSaveMoreLocationArray];
+                [_moreLocationTableView reloadData];
+            });
+        });
+        
+    } else {
+        // 异步
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            for (NSData *data in _moreLocationKeyedArchiverArray) {
+                // 取出归档数据，添加到显示数组
+                Pokemon *pokemon = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+                [_moreLocationArray addObject:pokemon];
+            }
+            
+            // 回到主线程显示
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_moreLocationTableView reloadData];
+            });
+        });
+    }
+}
+
+- (void)addDefaultMoreLocationData {
     NSInteger pokemonId = kDefaultPokemonFindId;
     
     // 菊石兽
-    Pokemon *pokemon1 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.76512991848991 andLongitude:-122.51146316528319];
+    Pokemon *omanyte1 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.76512991848991 andLongitude:-122.51146316528319];
+    Pokemon *omanyte2 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.773827127882655 andLongitude:-122.51198351383209];
+    Pokemon *omanyte3 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.74654474018769 andLongitude:-122.50909209251402];
     // 化石盔
-    Pokemon *pokemon2 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.748453519925434 andLongitude:-122.50889897346498];
+    Pokemon *kabuto1 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.748453519925434 andLongitude:-122.50889897346498];
+    Pokemon *kabuto2 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.765303787888044 andLongitude:-122.42734372615813];
+    Pokemon *kabuto3 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.759688872019986 andLongitude:-122.51083552837372];
+    Pokemon *kabuto4 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.77786795022819 andLongitude:-122.51341044902803];
     // 镰刀盔
-    Pokemon *pokemon3 = [Pokemon pokemonWithPokemonId:141 andName:@"镰刀盔" andLatitude:37.748453519925434 andLongitude:-122.50889897346498];
-    [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3]];
+    Pokemon *kabutops = [Pokemon pokemonWithPokemonId:141 andName:@"镰刀盔" andLatitude:37.748453519925434 andLongitude:-122.50889897346498];
+    // 吉利蛋
+    //    Pokemon *chansey = [Pokemon pokemonWithPokemonId:113 andName:@"镰刀盔" andLatitude:37.759735523379035 andLongitude:-122.50887751579285];
+    
+    [_moreLocationArray addObjectsFromArray:@[omanyte1, omanyte2, omanyte3, kabuto1, kabuto2, kabuto3, kabuto4, kabutops]];
     
     if (_isSearchLapras) {
         pokemonId = 131;
         
-        Pokemon *pokemon1 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.77075800 andLongitude:-122.48725300];
-        Pokemon *pokemon2 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.77492950 andLongitude:-122.4194155];
-        Pokemon *pokemon3 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.77484901 andLongitude:-122.51171529];
-        Pokemon *pokemon4 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.810062 andLongitude:-122.421890];
-        Pokemon *pokemon5 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.778296157302 andLongitude:-122.51442288082];
-        Pokemon *pokemon6 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.773916172517694 andLongitude:-122.51287400722502];
-        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4, pokemon5, pokemon6]];
+        Pokemon *lapras1 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.77075800 andLongitude:-122.48725300];
+        Pokemon *lapras2 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.77492950 andLongitude:-122.4194155];
+        Pokemon *lapras3 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.77484901 andLongitude:-122.51171529];
+        Pokemon *lapras4 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.810062 andLongitude:-122.421890];
+        Pokemon *lapras5 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.778296157302 andLongitude:-122.51442288082];
+        Pokemon *lapras6 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.773916172517694 andLongitude:-122.51287400722502];
+        Pokemon *lapras7 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"乘龙" andLatitude:37.7743529136985 andLongitude:-122.51239657402037];
+        [_moreLocationArray addObjectsFromArray:@[lapras1, lapras2, lapras3, lapras4, lapras5, lapras6, lapras7]];
         
     }
     
     if (_isSearchSnorlax) {
         pokemonId = 143;
         
-        Pokemon *pokemon1 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.76667776582661 andLongitude:-122.49135732650757];
-        Pokemon *pokemon2 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.80602037076846 andLongitude:-122.46837615966797];
-        Pokemon *pokemon3 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.74259553070687 andLongitude:-122.41493582725523];
-        Pokemon *pokemon4 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.79875119770314 andLongitude:-122.47482419013977];
-        Pokemon *pokemon5 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.77168154377704 andLongitude:-122.47600436210632];
-        Pokemon *pokemon6 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.824022798368375 andLongitude:-122.36984252929688];
-        Pokemon *pokemon7 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.76297984117803 andLongitude:-122.47702360153197];
-        Pokemon *pokemon8 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.788335748021495 andLongitude:-122.43685483932494];
-        Pokemon *pokemon9 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.804024068552096 andLongitude:-122.42804646492004];
-        Pokemon *pokemon10 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.80851673221186 andLongitude:-122.41245210170747];
-        Pokemon *pokemon11 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.80226507389669 andLongitude:-122.4129295349121];
-        Pokemon *pokemon12 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.77311476694162 andLongitude:-122.44287371635437];
-        [_moreLocationArray addObjectsFromArray:@[pokemon1, pokemon2, pokemon3, pokemon4, pokemon5, pokemon6, pokemon7, pokemon8, pokemon9, pokemon10, pokemon11, pokemon12]];
+        Pokemon *snorlax1 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.76667776582661 andLongitude:-122.49135732650757];
+        Pokemon *snorlax2 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.80602037076846 andLongitude:-122.46837615966797];
+        Pokemon *snorlax3 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.74259553070687 andLongitude:-122.41493582725523];
+        Pokemon *snorlax4 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.79875119770314 andLongitude:-122.47482419013977];
+        Pokemon *snorlax5 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.77168154377704 andLongitude:-122.47600436210632];
+        Pokemon *snorlax6 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.824022798368375 andLongitude:-122.36984252929688];
+        Pokemon *snorlax7 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.76297984117803 andLongitude:-122.47702360153197];
+        Pokemon *snorlax8 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.788335748021495 andLongitude:-122.43685483932494];
+        Pokemon *snorlax9 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.804024068552096 andLongitude:-122.42804646492004];
+        Pokemon *snorlax10 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.80851673221186 andLongitude:-122.41245210170747];
+        Pokemon *snorlax11 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.80226507389669 andLongitude:-122.4129295349121];
+        Pokemon *snorlax12 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.77311476694162 andLongitude:-122.44287371635437];
+        Pokemon *snorlax13 = [Pokemon pokemonWithPokemonId:pokemonId andName:@"卡比兽" andLatitude:37.747219 andLongitude:-122.413765];
+        [_moreLocationArray addObjectsFromArray:@[snorlax1, snorlax2, snorlax3, snorlax4, snorlax5, snorlax6, snorlax7, snorlax8, snorlax9, snorlax10, snorlax11, snorlax12, snorlax13]];
     }
 }
 
@@ -232,10 +327,21 @@
                 [userDefaults setInteger:pokemon.pokemonId forKey:kSavePokemonFindId];
                 [userDefaults setFloat:pokemon.latitude forKey:kSaveLatitude];
                 [userDefaults setFloat:pokemon.longitude forKey:kSaveLongitude];
+                [userDefaults setValue:pokemon.name forKey:kSavePokemonFindName];
                 
                 if (pokemon.name && ![pokemon.name isEqualToString:@""]) {
                     [userDefaults setValue:pokemon.name forKey:kSavePokemonFindName];
                 }
+                
+            } else if (_pokemonSearchType == PokemonSearchTypeRange) {
+                // 经纬度范围
+                NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                [userDefaults setValue:_minLatitude forKey:kSaveRangeMinLatitude];
+                [userDefaults setValue:_maxLatitude forKey:kSaveRangeMaxLatitude];
+                [userDefaults setValue:_minLongitude forKey:kSaveRangeMinLongitude];
+                [userDefaults setValue:_maxLongitude forKey:kSaveRangeMaxLongitude];
+                [userDefaults setValue:[_rangePokemonIds componentsJoinedByString:@"/"] forKey:kSaveRangePokemonFindId];
+                [userDefaults setValue:[_rangePokemonNames componentsJoinedByString:@"/"] forKey:kSaveRangePokemonFindName];
             }
             
             BOOL isFinded = NO;
@@ -255,7 +361,9 @@
                             NSLog(@"%@ ---> %@", findedUrlString, pokemonName);
                             
                             // 拼装范围搜索提示语
-                            NSString *tip = [NSString stringWithFormat:@"%@位于 ---> 纬度:%f---经度:%f\n", pokemonName, [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]];
+                            NSLog(@"%ld", (long)[dict[@"expiration_time"] integerValue]);
+                            NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[dict[@"expiration_time"] integerValue]]];
+                            NSString *tip = [NSString stringWithFormat:@"%@位于 -> 纬度:%f - 经度:%f ->存在时间:%@\n", pokemonName, [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue], expirationTime];
                             [rangeFindedMessage appendString:tip];
                             
                             break;
@@ -267,7 +375,9 @@
                         isFinded = YES;
                         targetDict = dict;
                         
-                        NSString *findedUrlString = [NSString stringWithFormat:@"https://pokevision.com/#/@%f,%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]];
+                        // expiration_time
+                        NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[targetDict[@"expiration_time"] integerValue]]];
+                        NSString *findedUrlString = [NSString stringWithFormat:@"https://pokevision.com/#/@%f,%f -> 存在时间:%@", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue], expirationTime];
                         NSLog(@"%@", findedUrlString);
                         
                         break;
@@ -282,8 +392,11 @@
                     [self play]; // 放音乐提示
                     
                     NSString *targetName = pokemon.name ? pokemon.name : [NSString stringWithFormat:@"%ld", (long)pokemon.pokemonId];
+                    // expiration_time
+                    NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[targetDict[@"expiration_time"] integerValue]]];
+                    
                     NSString *title = _rangeSwitch.isOn ? @"目标" : [NSString stringWithFormat:@"目标%@位置", targetName];
-                    NSString *message = _rangeSwitch.isOn ? rangeFindedMessage : [NSString stringWithFormat:@"纬度:%f---经度:%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]];
+                    NSString *message = _rangeSwitch.isOn ? rangeFindedMessage : [NSString stringWithFormat:@"纬度:%f - 经度:%f -> 存在时间:%@", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue], expirationTime];
                     
                     UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
                     [alerView show];
@@ -295,6 +408,16 @@
         [self hideHud];
         NSLog(@"%@", error);
     }];
+}
+
+#pragma mark 时间戳转换成时间格式字符串
+- (NSString *)transformDateStringWithTimestamp:(NSString *)timestamp {
+    // 1469674532
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[timestamp doubleValue] / 1000];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"mm:ss";
+    
+    return [dateFormatter stringFromDate:date];
 }
 
 #pragma mark 单点定位搜索
@@ -345,18 +468,18 @@
     _rangePokemonNames = [rangePokemonNames componentsSeparatedByString:@"/"];
     
     // 经纬度范围
-    NSString *minLatitude = [_minLatitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    NSString *maxLatitude = [_maxLatitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    NSString *minLongitude = [_minLongitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    NSString *maxLongitude = [_maxLongitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    _minLatitude = [_minLatitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    _maxLatitude = [_maxLatitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    _minLongitude = [_minLongitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    _maxLongitude = [_maxLongitudeTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
-    // 范围内随机经纬度
-    CGFloat latitude = [self randFloatBetween:[minLatitude floatValue] and:[maxLatitude floatValue]];
-    CGFloat longitude = [self randFloatBetween:[minLongitude floatValue] and:[maxLongitude floatValue]];
-    
-    if (_rangePokemonIds.count == 0 || [[NSString stringUtils:minLatitude] isEqualToString:@""] || [[NSString stringUtils:maxLatitude] isEqualToString:@""] || [[NSString stringUtils:minLongitude] isEqualToString:@""] || [[NSString stringUtils:maxLongitude] isEqualToString:@""]) {
+    if (_rangePokemonIds.count == 0 || [[NSString stringUtils:_minLatitude] isEqualToString:@""] || [[NSString stringUtils:_maxLatitude] isEqualToString:@""] || [[NSString stringUtils:_minLongitude] isEqualToString:@""] || [[NSString stringUtils:_maxLongitude] isEqualToString:@""]) {
         return NO;
     }
+    
+    // 范围内随机经纬度
+    CGFloat latitude = [self randFloatBetween:[_minLatitude floatValue] and:[_maxLatitude floatValue]];
+    CGFloat longitude = [self randFloatBetween:[_minLongitude floatValue] and:[_maxLongitude floatValue]];
     
     if (_rangePokemonIds.count > 0) [self showHudInView:self.view hint:nil];
     [self searchRequestWithPokemon:[Pokemon pokemonWithPokemonId:0 andName:nil andLatitude:latitude andLongitude:longitude]];
@@ -423,6 +546,11 @@
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    // 删除归档数组中对应的数据，并更新NSUserDefaults
+    [_moreLocationKeyedArchiverArray removeObjectAtIndex:indexPath.row];
+    [[NSUserDefaults standardUserDefaults] setValue:_moreLocationKeyedArchiverArray forKey:kSaveMoreLocationArray];
+    
+    // 删除显示数组对应数据
     [_moreLocationArray removeObjectAtIndex:indexPath.row];
     [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
     
@@ -553,6 +681,11 @@
     AddLocationViewController *addLocationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddLocationViewController"];
     
     addLocationViewController.selectLocationBlock = ^(Pokemon *pokemon) {
+        // 把新添加的数据归档存入NSUserDefaults
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:pokemon];
+        [_moreLocationKeyedArchiverArray addObject:data];
+        [[NSUserDefaults standardUserDefaults] setValue:_moreLocationKeyedArchiverArray forKey:kSaveMoreLocationArray];
+        
         [_moreLocationArray addObject:pokemon];
         [_moreLocationTableView reloadData];
     };
