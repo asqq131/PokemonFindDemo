@@ -62,6 +62,8 @@
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *emptyLocationTipLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rangeSearchViewWidthLayout;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *moreLocationViewWidthLayout;
 
 @end
 
@@ -103,8 +105,10 @@
     self.title = @"pokemon小精灵搜索";
     _moreLocationArray = [NSMutableArray array];
     _moreLocationKeyedArchiverArray = [NSMutableArray array];
-    
     self.pokemonSearchType = PokemonSearchTypeDefault;
+    
+    _moreLocationViewWidthLayout.constant = kScreenSize.width;
+    _rangeSearchViewWidthLayout.constant = _moreLocationViewWidthLayout.constant;
     
     [self setupOneLocationGUI]; // 配置单点定位搜索数据
     [self setupMoreLocationGUI]; // 配置多重定位搜索数据
@@ -225,21 +229,29 @@
 - (void)addDefaultMoreLocationData {
     NSInteger pokemonId = kDefaultPokemonFindId;
     
-    // 菊石兽
-    Pokemon *omanyte1 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.76512991848991 andLongitude:-122.51146316528319];
-    Pokemon *omanyte2 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.773827127882655 andLongitude:-122.51198351383209];
-    Pokemon *omanyte3 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.74654474018769 andLongitude:-122.50909209251402];
+//    // 菊石兽
+//    Pokemon *omanyte1 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.76512991848991 andLongitude:-122.51146316528319];
+//    Pokemon *omanyte2 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.773827127882655 andLongitude:-122.51198351383209];
+//    Pokemon *omanyte3 = [Pokemon pokemonWithPokemonId:138 andName:@"菊石兽" andLatitude:37.74654474018769 andLongitude:-122.50909209251402];
+    
     // 化石盔
     Pokemon *kabuto1 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.748453519925434 andLongitude:-122.50889897346498];
     Pokemon *kabuto2 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.765303787888044 andLongitude:-122.42734372615813];
     Pokemon *kabuto3 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.759688872019986 andLongitude:-122.51083552837372];
     Pokemon *kabuto4 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.77786795022819 andLongitude:-122.51341044902803];
+    Pokemon *kabuto5 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.76571513581217 andLongitude:-122.49846518039705];
+    Pokemon *kabuto6 = [Pokemon pokemonWithPokemonId:140 andName:@"化石盔" andLatitude:37.794465653213734 andLongitude:-122.39273250102997];
     // 镰刀盔
     Pokemon *kabutops = [Pokemon pokemonWithPokemonId:141 andName:@"镰刀盔" andLatitude:37.748453519925434 andLongitude:-122.50889897346498];
+    
     // 吉利蛋
     //    Pokemon *chansey = [Pokemon pokemonWithPokemonId:113 andName:@"镰刀盔" andLatitude:37.759735523379035 andLongitude:-122.50887751579285];
     
-    [_moreLocationArray addObjectsFromArray:@[omanyte1, omanyte2, omanyte3, kabuto1, kabuto2, kabuto3, kabuto4, kabutops]];
+    // 椰蛋树
+    Pokemon *exeggutor1 = [Pokemon pokemonWithPokemonId:103 andName:@"镰刀盔" andLatitude:37.77511190437024 andLongitude:-122.41547763347626];
+    Pokemon *exeggutor2 = [Pokemon pokemonWithPokemonId:103 andName:@"镰刀盔" andLatitude:37.776218575129164 andLongitude:-122.38909006118774];
+    
+    [_moreLocationArray addObjectsFromArray:@[kabuto1, kabuto2, kabuto3, kabuto4, kabuto5, kabuto6, kabutops, exeggutor1, exeggutor2]];
     
     if (_isSearchLapras) {
         pokemonId = 131;
@@ -361,9 +373,9 @@
                             NSLog(@"%@ ---> %@", findedUrlString, pokemonName);
                             
                             // 拼装范围搜索提示语
-                            NSLog(@"%ld", (long)[dict[@"expiration_time"] integerValue]);
-                            NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[dict[@"expiration_time"] integerValue]]];
-                            NSString *tip = [NSString stringWithFormat:@"%@位于 -> 纬度:%f - 经度:%f ->存在时间:%@\n", pokemonName, [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue], expirationTime];
+//                            NSLog(@"%ld", (long)[dict[@"expiration_time"] integerValue]);
+//                            NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[dict[@"expiration_time"] integerValue]]];
+                            NSString *tip = [NSString stringWithFormat:@"%@位于 -> 纬度:%f - 经度:%f\n", pokemonName, [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]];
                             [rangeFindedMessage appendString:tip];
                             
                             break;
@@ -376,8 +388,8 @@
                         targetDict = dict;
                         
                         // expiration_time
-                        NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[targetDict[@"expiration_time"] integerValue]]];
-                        NSString *findedUrlString = [NSString stringWithFormat:@"https://pokevision.com/#/@%f,%f -> 存在时间:%@", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue], expirationTime];
+//                        NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[targetDict[@"expiration_time"] integerValue]]];
+                        NSString *findedUrlString = [NSString stringWithFormat:@"https://pokevision.com/#/@%f,%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]];
                         NSLog(@"%@", findedUrlString);
                         
                         break;
@@ -393,10 +405,10 @@
                     
                     NSString *targetName = pokemon.name ? pokemon.name : [NSString stringWithFormat:@"%ld", (long)pokemon.pokemonId];
                     // expiration_time
-                    NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[targetDict[@"expiration_time"] integerValue]]];
+//                    NSString *expirationTime = [self transformDateStringWithTimestamp:[NSString stringWithFormat:@"%lld", (long long)[targetDict[@"expiration_time"] integerValue]]];
                     
                     NSString *title = _rangeSwitch.isOn ? @"目标" : [NSString stringWithFormat:@"目标%@位置", targetName];
-                    NSString *message = _rangeSwitch.isOn ? rangeFindedMessage : [NSString stringWithFormat:@"纬度:%f - 经度:%f -> 存在时间:%@", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue], expirationTime];
+                    NSString *message = _rangeSwitch.isOn ? rangeFindedMessage : [NSString stringWithFormat:@"纬度:%f - 经度:%f", [targetDict[@"latitude"] floatValue], [targetDict[@"longitude"] floatValue]];
                     
                     UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
                     [alerView show];
@@ -413,11 +425,15 @@
 #pragma mark 时间戳转换成时间格式字符串
 - (NSString *)transformDateStringWithTimestamp:(NSString *)timestamp {
     // 1469674532
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[timestamp doubleValue] / 1000];
+    NSDate *expirationTime = [NSDate dateWithTimeIntervalSince1970:[timestamp floatValue]];
+    NSTimeZone *zone = [NSTimeZone systemTimeZone];
+    NSInteger interval = [zone secondsFromGMTForDate: expirationTime];
+    NSDate *localeDate = [expirationTime dateByAddingTimeInterval: interval];
+    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"mm:ss";
     
-    return [dateFormatter stringFromDate:date];
+    return [dateFormatter stringFromDate:localeDate];
 }
 
 #pragma mark 单点定位搜索
